@@ -25,7 +25,7 @@ func HandleServer(res http.ResponseWriter, req *http.Request) {
 	//可以手工设置响应码
 	res.WriteHeader(http.StatusOK)
 	//获取系统VERSION,并设置response header
-	res.Header().Set("VERSION", os.Getenv("JAVA_HOME"))
+	res.Header().Set("VERSION", os.Getenv("VERSION"))
 	fmt.Fprintf(res, "ok")
 	//Server 端记录访问日志包括客户端 IP，HTTP 返回码，输出到 server 端的标准输出
 	fmt.Printf("client IP: %s\n", req.RemoteAddr)
