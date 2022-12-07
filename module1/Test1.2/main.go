@@ -21,8 +21,6 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	go producer(ctx, messages)
-	go producer(ctx, messages)
-	go consumer(messages)
 	consumer(messages)
 	// time.Sleep(11 * time.Second)
 }
