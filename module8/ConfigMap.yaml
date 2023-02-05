@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: httpserver-env-cm
+  namespace: mangodemo
+data:
+  VERSION: v1.0 from cm
+  HTTPSERVER_CONF: /etc/httpserver/httpserver.properties
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: httpserver-conf-cm
+  namespace: mangodemo
+data:
+  httpserver.properties: |
+  log_level: debug
+  my_conf: myconf_v1
