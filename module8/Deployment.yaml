@@ -66,6 +66,8 @@ spec:
               port: 8080
             failureThreshold: 5    #最大等待次数
             periodSeconds: 10
+      imagePullSecrets: #配置私有仓库的dockerconfigjson
+        - name: dockercrt
       volumes:
         - name: config-volume
           configMap:

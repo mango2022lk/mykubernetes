@@ -7,10 +7,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - mangohttp.com
+        - www.mangohttp.com
       secretName: mango-tls
   rules:
-    - host: mangohttp.com
+    - host: www.mangohttp.com
       http:
         paths:
           - path: "/"
