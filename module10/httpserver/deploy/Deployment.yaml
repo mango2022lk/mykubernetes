@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpserver
+  namespace: mangodemo
+  labels:
+    app: httpserver
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # maxSurge: 最大激增数, 指更新过程中, 最多可以比replicas预先设定值多出的pod数量, 可以为固定值或百分比(默认25%), 更新过程中最多会有replicas + maxSurge个pod
+      maxSurge: 1
+      # maxUnavailable: 最大无效数, 指更新过程中, 最多有几个pod处于无法服务状态, 当maxSurge不为0时, 此栏位也不可为0, 整个更新过程中, 会有maxUnavailable个pod处于Terminating状态
+      maxUnavailable: 1
+  # minReadySeconds: 容器内应用的启动时间, pod变为run状态, 会在minReadySeconds后继续更新下一个pod. 如果不设置该属性, pod会在run成功后, 立即更新下一个pod.
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: httpserver
+  template:
+    metadata:
+      annotations:
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app: httpserver
+    spec:
+      containers:
+        - name: httpserver
+          image: mangolk2021/httpserver-metrics:v1
+          command: [/httpserver]
+          envFrom:
+            - configMapRef:
+                name: httpserver-env-cm
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/httpserver/
+          resources:  #Qos
+            limits:
+              cpu: 200m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          # 优雅启动
+          livenessProbe:
+            httpGet:
+              ### this probe will fail with 404 error code
+              ### only httpcode between 200-400 is retreated as success
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          # 探活
+          readinessProbe:
+            httpGet:
+              ### this probe will fail with 404 error code
+              ### only httpcode between 200-400 is retreated as success
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            successThreshold: 2
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            failureThreshold: 5    #最大等待次数
+            periodSeconds: 10
+      imagePullSecrets: #配置私有仓库的dockerconfigjson
+        - name: dockercrt
+      volumes:
+        - name: config-volume
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: httpserver-conf-cm
