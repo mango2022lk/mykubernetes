@@ -117,6 +117,11 @@ http://localhost:16686
 
 
 7.实现istio的安全通信 
+```shell
+#生成身份认证信息
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=mango Inc./CN=*.mango.io' -keyout mango.io.key -out mango.io.crt
+kubectl create -n istio-system secret tls mango-credential --key=mango.io.key --cert=mango.io.crt
+```
 
 ```yaml
 VitrualService:
