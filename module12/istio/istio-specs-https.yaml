@@ -6,15 +6,13 @@ spec:
   gateways:
     - service0
   hosts:
-    - httpsserver.cncamp.io
+    - httpsserver.mango.io
   http:
   - match:
-      - uri:
-          exact: /service0
       - port: 443
     route:
       - destination:
-          host: httpserver.tracing.svc.cluster.local
+          host: service0.tracing.svc.cluster.local
           port:
             number: 80
 ---
@@ -27,11 +25,11 @@ spec:
     istio: ingressgateway
   servers:
     - hosts:
-        - httpsserver.cncamp.io
+        - httpsserver.mango.io
       port:
         name: https-default
         number: 443
         protocol: HTTPS
       tls:
         mode: SIMPLE
-        credentialName: cncamp-credential
+        credentialName: mango-credential
